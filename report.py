@@ -250,6 +250,6 @@ for i in range(result.shape[0]):
 task_tree.clean_tree()
 task_tree.compute_completion()
 
-task_tree.generate_report(depth=1, parent_name='.')
+task_tree.generate_report(depth=1, parent_name='Reports')
 
 
