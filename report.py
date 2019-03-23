@@ -10,6 +10,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", default='OmniFocus.csv', help="The name to the csv file")
 parser.add_argument("--timezone", default='US/Pacific')
+parser.add_argument("--target", default=4, help="Target work hours per day")
 args = parser.parse_args()
 print(args)
 
@@ -151,7 +152,19 @@ class TreeNode:
         ax1.set_xlabel('Days ago', fontsize=14)
         ax1.set_ylabel('Cumulative Hours', fontsize=14)
 
-        ax2.axhline(8.0, linestyle=':', c='m')
+        if self.level == 0:
+            if len(xaxis) > 30:
+                ax1.plot(xaxis[:30], self.completion_cdf[30] + np.flip(np.array([i * args.target for i in range(30)]), 0),
+                         color='g', linewidth=3, linestyle=':', alpha=0.8)
+            if len(xaxis) > 7:
+                ax1.plot(xaxis[:7], self.completion_cdf[7] + np.flip(np.array([i * args.target for i in range(7)]), 0),
+                         color='g', linewidth=3, linestyle=':', alpha=1.0)
+            ax1.plot(xaxis, np.flip(np.array([i * args.target for i in range(len(self.completion_pdf))]), 0),
+                     color='g', alpha=0.6, linewidth=3, linestyle=':', label='Reference %.1fh/day' % args.target)
+        ax2.axhline(8.0, linestyle=':', color='m')
+
+        if self.level == 0:
+            ax1.legend()
 
     def plot_due(self, date_range=7):
         if date_range > self.earliest_due + len(self.due_pdf):
@@ -167,6 +180,10 @@ class TreeNode:
         ax1.set_xlabel('Days in the future', fontsize=14)
         ax1.set_ylabel('Cumulative Hours', fontsize=14)
         ax1.set_ylim([0, np.max(self.due_cdf[:len(drange)]) * 1.2])
+
+        if self.level == 0:
+            ax1.plot(range(date_range), [i * args.target for i in range(1, date_range+1)],
+                         color='g', linewidth=3, linestyle=':', alpha=1.0)
 
         ax2.axhline(8.0, linestyle=':', c='m')
 
