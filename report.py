@@ -8,9 +8,9 @@ import os
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--path", default='OmniFocus.csv', help="The name to the csv file")
-parser.add_argument("--timezone", default='US/Pacific')
-parser.add_argument("--target", default=4, help="Target work hours per day")
+parser.add_argument("--path", type=str, default='OmniFocus.csv', help="The name to the csv file")
+parser.add_argument("--timezone", type=str, default='US/Pacific')
+parser.add_argument("--target", type=float, default=4, help="Target work hours per day")
 args = parser.parse_args()
 print(args)
 
