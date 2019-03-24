@@ -161,7 +161,7 @@ class TreeNode:
                          color='g', linewidth=3, linestyle=':', alpha=1.0)
             ax1.plot(xaxis, np.flip(np.array([i * args.target for i in range(len(self.completion_pdf))]), 0),
                      color='g', alpha=0.6, linewidth=3, linestyle=':', label='Reference %.1fh/day' % args.target)
-        ax2.axhline(8.0, linestyle=':', color='m')
+            ax2.axhline(args.target, linestyle=':', color='m')
 
         if self.level == 0:
             ax1.legend()
@@ -185,7 +185,7 @@ class TreeNode:
             ax1.plot(range(date_range), [i * args.target for i in range(1, date_range+1)],
                          color='g', linewidth=3, linestyle=':', alpha=1.0)
 
-        ax2.axhline(8.0, linestyle=':', c='m')
+            ax2.axhline(args.target, linestyle=':', c='m')
 
     def generate_report(self, depth=0, parent_name=""):
         plt.figure(figsize=(20, 5))
