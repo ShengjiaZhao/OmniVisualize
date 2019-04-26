@@ -6,6 +6,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import os
 import argparse
+import math
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", type=str, default='OmniFocus.csv', help="The name to the csv file")
@@ -187,7 +188,7 @@ class TreeNode:
 
             ax2.axhline(args.target, linestyle=':', c='m')
 
-    def generate_report(self, depth=0, parent_name=""):
+    def generate_report(self, depth=0, parent_name="Reports"):
         plt.figure(figsize=(20, 5))
         plt.subplot(1, 3, 1)
         plt.title("Completed Time")
@@ -219,8 +220,28 @@ class TreeNode:
                 self.children[index].generate_report(depth-1, name)
         plt.close()
 
-    # Printing functions for debugging
+    def generate_itemized(self, depth=0, parent_name="Reports"):
+        plt.figure(figsize=(40, 25))
+        num_reports = len(self.children)
+        height = int(math.floor(math.sqrt(num_reports)))
+        width = int(math.ceil(num_reports / float(height)))
+        for i, index in enumerate(self.children.keys()):
+            plt.subplot(height, width, i+1)
+            plt.title(self.children[index].name)
+            self.children[index].plot_completion()
+        plt.tight_layout()
 
+        if not os.path.isdir(parent_name):
+            os.makedirs(parent_name)
+        name = parent_name + "/" + self.name
+        plt.savefig('%s' % name + "_itemized.png")
+
+        if depth > 0:
+            for index in self.children.keys():
+                self.children[index].generate_itemized(depth-1, name)
+        plt.close()
+
+    # Printing functions for debugging
     def serialize_time(self, time):
         if time > 60:
             return "%dh%dm" % (time // 60, time % 60)
@@ -251,5 +272,5 @@ task_tree.clean_tree()
 task_tree.compute_completion()
 
 task_tree.generate_report(depth=1, parent_name='Reports')
-
+task_tree.generate_itemized(depth=0, parent_name='Reports')
 
