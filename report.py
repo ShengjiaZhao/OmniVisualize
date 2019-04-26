@@ -142,7 +142,7 @@ class TreeNode:
 
     # Report generation
 
-    def plot_completion(self):
+    def plot_completion(self, ylim1=None):
         ax1 = plt.gca()
         ax2 = ax1.twinx()
         xaxis = [-i for i in range(len(self.completion_pdf))]
@@ -164,6 +164,8 @@ class TreeNode:
                      color='g', alpha=0.6, linewidth=3, linestyle=':', label='Reference %.1fh/day' % args.target)
             ax2.axhline(args.target, linestyle=':', color='m')
 
+        if ylim1 is not None:
+            ax1.set_ylim([0, ylim1])
         if self.level == 0:
             ax1.legend()
 
@@ -221,14 +223,22 @@ class TreeNode:
         plt.close()
 
     def generate_itemized(self, depth=0, parent_name="Reports"):
-        plt.figure(figsize=(40, 25))
+        plt.figure(figsize=(40, 20))
         num_reports = len(self.children)
         height = int(math.floor(math.sqrt(num_reports)))
         width = int(math.ceil(num_reports / float(height)))
+
+        max_time = 0
+        for i, index in enumerate(self.children.keys()):
+            if len(self.children[index].completion_cdf) != 0 and self.children[index].completion_cdf[0] > max_time:
+                max_time = self.children[index].completion_cdf[0]
+        max_time *= 1.1
+
         for i, index in enumerate(self.children.keys()):
             plt.subplot(height, width, i+1)
-            plt.title(self.children[index].name)
-            self.children[index].plot_completion()
+            plt.title(self.children[index].name, fontsize=20, fontstyle='oblique')
+            self.children[index].plot_completion(ylim1=max_time)
+
         plt.tight_layout()
 
         if not os.path.isdir(parent_name):
