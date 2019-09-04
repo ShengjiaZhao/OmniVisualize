@@ -182,9 +182,6 @@ class TreeNode:
             ax2.legend()
 
     def plot_category(self, time_range=None):
-        num_color = 20
-
-
         items = {}
         total_time = 0
         for index in self.children:
@@ -232,7 +229,8 @@ class TreeNode:
         if values[0] < 0.1:
             labels = labels[1:]
             values = values[1:]
-
+            colors = colors[1:]
+            
         ax1 = plt.gca()
 
         def func(pct):
