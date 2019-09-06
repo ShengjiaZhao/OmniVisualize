@@ -181,7 +181,7 @@ class TreeNode:
         if self.level == 0:
             ax2.legend()
 
-    def plot_category(self, time_range=None):
+    def plot_category(self, time_range=None, min_fraction=5.0):
         items = {}
         total_time = 0
         for index in self.children:
@@ -200,13 +200,13 @@ class TreeNode:
         for i, key in enumerate(items):
             color_dict[key] = palette[i]
 
-        threshold = total_time / 20.0
+        threshold = total_time * min_fraction / 100.0
         labels = ['Others']
         values = [0.0]
         colors = ['gray']
         for key in items:
             # If text too long line break it
-            if len(key) < 15 or key.find(' ') == -1:
+            if len(key) < 10 or key.find(' ') == -1:
                 name = key
             else:
                 prev_find = -1
@@ -230,7 +230,7 @@ class TreeNode:
             labels = labels[1:]
             values = values[1:]
             colors = colors[1:]
-            
+
         ax1 = plt.gca()
 
         def func(pct):
@@ -238,7 +238,7 @@ class TreeNode:
             return "{:.0f}%\n({:d} h)".format(pct, absolute)
 
         ax1.pie(values, labels=labels, autopct=lambda pct: func(pct),
-                shadow=False, startangle=90, colors=colors)
+                shadow=False, startangle=90, colors=colors, pctdistance=0.85)
         ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
     def plot_due(self, date_range=7):
@@ -258,13 +258,13 @@ class TreeNode:
 
         if self.level == 0:
             ax1.plot(range(date_range), [i * args.target for i in range(1, date_range+1)],
-                         color='g', linewidth=3, linestyle=':', alpha=1.0)
+                         color='g', linewidth=3, linestyle=':', alpha=1.0, explode=True)
 
             ax2.axhline(args.target, linestyle=':', c='m')
 
     def generate_report(self, depth=0, parent_name="Reports"):
         from matplotlib import rcParams
-        rcParams['axes.titlepad'] = 10
+        rcParams['axes.titlepad'] = 15
 
         plt.figure(figsize=(21, 12))
         plt.subplot(2, 3, 1)
@@ -291,14 +291,14 @@ class TreeNode:
         plt.subplot(2, 3, 4)
         plt.title("Time by Category (Total)")
         try:
-            self.plot_category()
+            self.plot_category(min_fraction=3.0)
         except:
             plt.cla()
 
         plt.subplot(2, 3, 5)
         plt.title("Time by Category (Past 30 Days)")
         try:
-            self.plot_category(time_range=30)
+            self.plot_category(time_range=30, min_fraction=3.0)
         except:
             plt.cla()
 
