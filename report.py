@@ -155,7 +155,7 @@ class TreeNode:
         else:
             date_range = min(date_range, len(self.completion_pdf))
             pdf = self.completion_pdf[:date_range]
-            cdf = self.completion_cdf[:date_range]
+            cdf = self.completion_cdf[:date_range].copy()
             cdf -= self.completion_cdf[date_range]
         xaxis = [-i for i in range(len(pdf))]
         ax2.bar(xaxis, np.minimum(pdf, 24), alpha=0.5, color='m')
